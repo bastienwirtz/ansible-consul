@@ -1,0 +1,14 @@
+---
+
+- name: Consul leave
+  delegate_to: "{{ item }}"
+  command: "{{ consul_binary }} leave {% if consul_acl_enable %} -token {{ consul_acl_master_token }} {% endif %} -http-addr {{ consul_addresses_http }}:{{ consul_ports_http }}"
+  changed_when: false
+
+- name: Restart consul on Unix
+  delegate_to: "{{ item }}"
+  service:
+    name: consul
+    state: restarted
+    # Needed to force SysV service manager on Docker for Molecule tests
+    use: "{{ ansible_service_mgr }}"

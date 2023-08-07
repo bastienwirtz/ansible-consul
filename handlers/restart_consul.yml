@@ -6,13 +6,13 @@
   when: ansible_service_mgr == "systemd"
   listen: 'reload systemd daemon'
 
-- name: Restart consul on Unix
-  service:
-    name: consul
-    state: restarted
-    # Needed to force SysV service manager on Docker for Molecule tests
-    use: "{{ ansible_service_mgr }}"
+- name: Rolling restart consul on Unix
+  # Manual loop on playbook hosts to perform a "serial: 1" equivalent on a set of task
+  include_tasks: ../tasks/leave_restart_consul.yml
+  with_items: "{{ play_hosts }}"
+  listen: 'restart consul'
   when:
+    - inventory_hostname == play_hosts[0]
     - ansible_os_family != "Darwin"
     - ansible_os_family != "Windows"
   listen: 'restart consul'
