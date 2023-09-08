@@ -12,3 +12,8 @@
     state: restarted
     # Needed to force SysV service manager on Docker for Molecule tests
     use: "{{ ansible_service_mgr }}"
+
+- name: Wait for service availability
+  pause:
+    seconds: "{{ consul_rolling_restart_delai_sec }}"
+  when: consul_rolling_restart_delai_sec > 0
